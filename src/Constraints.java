@@ -11,6 +11,6 @@ public interface Constraints {
     public static final int NUMBER_OF_CENTIPEDES_TO_DESTROY = 12;
     public static final int MUSHROOM_CHANCE = 10;
     public static final int DELAY = 17;
-    public static final int PLAYER_WIDTH = 15;
-    public static final int PLAYER_HEIGHT = 10;
+    public static final int PLAYER_WIDTH = 14;
+    public static final int PLAYER_HEIGHT = 20;
 }
