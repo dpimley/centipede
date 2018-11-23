@@ -1,8 +1,9 @@
 import javax.swing.ImageIcon;
 
-public class Centipede extends Sprite {
+public class Centipede extends Sprite implements Constraints {
     private int lives;
-    private final String centipedeImg = "../images/centipede.png";
+    private final String centipedeImg = "images\\centipede.png";
+    public int cur_direction = -CENTIPEDE_SPEED;
 
     public Centipede(int x, int y) {
         initCentipede(x, y);

@@ -1,13 +1,13 @@
 import javax.swing.ImageIcon;
 
 public class Mushroom extends Sprite {
-    private final String mushroomImg0 = "../images/mushroom0.png";
-    private final String mushroomImg1 = "../images/mushroom1.png";
-    private final String mushroomImg2 = "../images/mushroom2.png";
+    private final String mushroomImg0 = "images\\mushroom0.png";
+    private final String mushroomImg1 = "images\\mushroom1.png";
+    private final String mushroomImg2 = "images\\mushroom2.png";
 
     private int times_hit;
 
-    public void Mushroom(int x, int y) {
+    public Mushroom(int x, int y) {
         initMushroom(x, y);
     }
 
@@ -28,7 +28,6 @@ public class Mushroom extends Sprite {
         //choose new state for mushroom
         if (times_hit == 3) {
             this.setDying(true);
-            this.die();
         }
         else if (times_hit == 2) {
             ImageIcon ii = new ImageIcon(mushroomImg2);

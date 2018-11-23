@@ -6,7 +6,6 @@ public class Player extends Sprite implements Constraints {
     private final int START_Y = 600;
     private final int START_X = 350;
 
-    private final int PLAYER_AREA_Y = 300;
 
     private final String playerImg = "images\\player.png";
     private int width;
@@ -37,8 +36,8 @@ public class Player extends Sprite implements Constraints {
             x = BOARD_WIDTH - 2 * width;
         }
 
-        if (y <= PLAYER_AREA_Y){
-            y = PLAYER_AREA_Y;
+        if (y <= GROUND){
+            y = GROUND;
         }
 
         if (y >= BOARD_HEIGHT - 2){
