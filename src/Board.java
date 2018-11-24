@@ -135,7 +135,6 @@ public class Board extends JPanel implements Runnable, Constraints {
 
         if (spider.isDying()) {
             spider.die();
-            spider = new Spider(SPIDER_INIT_X, SPIDER_INIT_Y);
         }
     }
 
@@ -242,25 +241,26 @@ public class Board extends JPanel implements Runnable, Constraints {
             for (Mushroom mushroom: mushrooms) {
                 mushroom.setInitialImage();
                 mushroom.setDying(false);
-                mushroom.setVisible(true);
             }
 
             // reset centipede
+            int i = (BOARD_WIDTH - CENTIPEDE_WIDTH);
             for (Centipede centipede: centipedes) {
-                for (int i = (BOARD_WIDTH - CENTIPEDE_WIDTH); i >= (BOARD_WIDTH - CENTIPEDE_WIDTH) - (CENTIPEDE_WIDTH * NUMBER_OF_CENTIPEDES_TO_DESTROY); i -= CENTIPEDE_WIDTH) {
-                    centipede.setX(i);
-                    centipede.setY(32);
-                    centipede.setDying(false);
-                    centipede.setVisible(true);
-                    centipede.times_hit = 0;
-                }
+                centipede.setX(i);
+                centipede.setY(32);
+                centipede.setDying(false);
+                centipede.setInitialImage();
+                centipede.cur_direction = -CENTIPEDE_SPEED;
+                i -= CENTIPEDE_WIDTH;
             }
 
             // reset spider
             spider.setX(SPIDER_INIT_X);
             spider.setY(SPIDER_INIT_Y);
             spider.setDying(false);
-            spider.times_hit = 0;
+            spider.setInitialImage();
+            spider.target_reached = true;
+            spider.setTarget();
 
             // reset player
             player.setX(344);
@@ -272,6 +272,40 @@ public class Board extends JPanel implements Runnable, Constraints {
             game_lives--;
             restart_round = false;
         }
+        else {
+            centipedes = new ArrayList<>();
+            drawInitCentipede();
+            mushrooms = new ArrayList<>();
+            drawInitMushrooms();
+            spider = new Spider(SPIDER_INIT_X, SPIDER_INIT_Y);
+            player = new Player();
+            shots = new ArrayList<>();
+            restart_round = false;
+        }
+    }
+
+    public boolean doesOverlapPC(Player obj1, Centipede obj2, int obj1_w, int obj1_h, int obj2_w, int obj2_h) {
+        if ((obj1.getX() > obj2.getX() + obj2_w) || (obj2.getX() > obj1.getX() + obj1_w)) {
+            return false;
+        }
+
+        if ((obj1.getY() > obj2.getY() + obj2_h) || (obj2.getY() > obj1.getY() + obj1_h)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public boolean doesOverlapPS(Player obj1, Spider obj2, int obj1_w, int obj1_h, int obj2_w, int obj2_h) {
+        if ((obj1.getX() > obj2.getX() + obj2_w) || (obj2.getX() > obj1.getX() + obj1_w)) {
+            return false;
+        }
+
+        if ((obj1.getY() > obj2.getY() + obj2_h) || (obj2.getY() > obj1.getY() + obj1_h)) {
+            return false;
+        }
+
+        return true;
     }
 
     public void animationCycle() {
@@ -388,13 +422,13 @@ public class Board extends JPanel implements Runnable, Constraints {
                 }
 
                 if (c_x + CENTIPEDE_WIDTH > BOARD_WIDTH) {
-                    if (c_y != GROUND - CENTIPEDE_HEIGHT) {
+                    if (c_y <= GROUND - CENTIPEDE_HEIGHT) {
                         centipede.setY(c_y + CENTIPEDE_HEIGHT);
                     }
                     centipede.act(-CENTIPEDE_SPEED);
                     centipede.cur_direction = -CENTIPEDE_SPEED;
                 } else if(c_x < 0) {
-                    if (c_y != GROUND - CENTIPEDE_HEIGHT) {
+                    if (c_y <= GROUND - CENTIPEDE_HEIGHT) {
                         centipede.setY(c_y + CENTIPEDE_HEIGHT);
                     }
                     centipede.act(CENTIPEDE_SPEED);
@@ -408,9 +442,16 @@ public class Board extends JPanel implements Runnable, Constraints {
 
         //player deaths
         if (spider.isVisible() && player.isVisible()) {
-            if (spider.getX() >= player.getX() && spider.getX() <= (player.getX() + PLAYER_WIDTH)
-                        && spider.getY() >= player.getY() && spider.getY() <= (player.getY() + PLAYER_HEIGHT)) {
+            if (doesOverlapPS(player, spider, PLAYER_WIDTH, PLAYER_HEIGHT, SPIDER_WIDTH, SPIDER_HEIGHT)) {
                 player.setDying(true);
+            }
+        }
+
+        for (Centipede centipede: centipedes) {
+            if (centipede.isVisible() && player.isVisible()){
+                if (doesOverlapPC(player, centipede, PLAYER_WIDTH, PLAYER_HEIGHT, CENTIPEDE_WIDTH, CENTIPEDE_HEIGHT)) {
+                    player.setDying(true);
+                }
             }
         }
     }

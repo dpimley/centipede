@@ -35,4 +35,11 @@ public class Centipede extends Sprite implements Constraints {
             setImage(ii.getImage());
         }
     }
+
+    public void setInitialImage() {
+        ImageIcon ii = new ImageIcon(centipedeImg0);
+        setImage(ii.getImage());
+        times_hit = 0;
+        setVisible(true);
+    }
 }

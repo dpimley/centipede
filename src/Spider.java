@@ -33,28 +33,28 @@ public class Spider extends Sprite implements Constraints {
             */
 
             target_x = rand.nextInt(BOARD_WIDTH - (2 * SPIDER_WIDTH)) + SPIDER_WIDTH;
-            target_y = rand.nextInt(BOARD_HEIGHT - SPIDER_AREA - SPIDER_HEIGHT) + SPIDER_AREA;
+            target_y = rand.nextInt(BOARD_HEIGHT - SPIDER_HEIGHT);
 
-            this.dx = 2 * Integer.signum(target_x - this.x);
-            this.dy = 2 * Integer.signum(target_y - this.y);
+            this.dx = 4 * Integer.signum(target_x - this.x);
+            this.dy = 4 * Integer.signum(target_y - this.y);
 
             target_reached = false;
         }
     }
 
     public void act(){
-        if (this.x >= target_x - 1 && this.x <= target_x + 1) {
+        if (this.x >= target_x - 3 && this.x <= target_x + 3) {
             this.dx = 0;
         }
 
-        if (this.y >= target_y - 1 && this.y <= target_y + 1) {
+        if (this.y >= target_y - 3 && this.y <= target_y + 3) {
             this.dy = 0;
         }
 
         this.x += dx;
         this.y += dy;
 
-        if ((this.x >= target_x - 1 && this.x <= target_x + 1) && (this.y >= target_y - 1 && this.y <= target_y + 1)) {
+        if ((this.x >= target_x - 3 && this.x <= target_x + 3) && (this.y >= target_y - 3 && this.y <= target_y + 3)) {
             target_reached = true;
         }
     }
@@ -68,5 +68,12 @@ public class Spider extends Sprite implements Constraints {
             ImageIcon ii = new ImageIcon(spiderImg1);
             setImage(ii.getImage());
         }
+    }
+
+    public void setInitialImage() {
+        ImageIcon ii = new ImageIcon(spiderImg0);
+        setImage(ii.getImage());
+        times_hit = 0;
+        setVisible(true);
     }
 }

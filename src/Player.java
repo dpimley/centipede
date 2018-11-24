@@ -28,20 +28,20 @@ public class Player extends Sprite implements Constraints {
         x += dx;
         y += dy;
 
-        if (x <= 2) {
-            x = 2;
+        if (x <= 0) {
+            x = 0;
         }
 
-        if (x >= BOARD_WIDTH - 2 * width){
-            x = BOARD_WIDTH - 2 * width;
+        if (x >= BOARD_WIDTH - PLAYER_WIDTH){
+            x = BOARD_WIDTH - PLAYER_WIDTH;
         }
 
-        if (y <= GROUND){
-            y = GROUND;
+        if (y <= 0){
+            y = 0;
         }
 
-        if (y >= BOARD_HEIGHT - 2){
-            y = BOARD_HEIGHT - 2;
+        if (y >= BOARD_HEIGHT - PLAYER_HEIGHT){
+            y = BOARD_HEIGHT - PLAYER_HEIGHT;
         }
 
         dx = 0;
