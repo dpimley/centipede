@@ -38,4 +38,11 @@ public class Mushroom extends Sprite {
             setImage(ii.getImage());
         }
     }
+
+    public void setInitialImage() {
+        ImageIcon ii = new ImageIcon(mushroomImg0);
+        setImage(ii.getImage());
+        times_hit = 0;
+        setVisible(true);
+    }
 }

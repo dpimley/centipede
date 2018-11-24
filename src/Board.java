@@ -195,7 +195,6 @@ public class Board extends JPanel implements Runnable, Constraints {
         g.drawString("Score: " + game_score + " Lives: " + game_lives, 2, 16);
 
         if (ingame) {
-            //g.drawLine(0, GROUND, BOARD_WIDTH, GROUND);
             drawCentipedes(g);
             drawSpider(g);
             drawMushrooms(g);
@@ -235,8 +234,48 @@ public class Board extends JPanel implements Runnable, Constraints {
         }
     }
 
+    // makes a new game based on whether or not the last round was won or if the player died
+    public void restart_game(boolean win) {
+        // if the player died
+        if (!win) {
+            // restore mushrooms
+            for (Mushroom mushroom: mushrooms) {
+                mushroom.setInitialImage();
+                mushroom.setDying(false);
+                mushroom.setVisible(true);
+            }
+
+            // reset centipede
+            for (Centipede centipede: centipedes) {
+                for (int i = (BOARD_WIDTH - CENTIPEDE_WIDTH); i >= (BOARD_WIDTH - CENTIPEDE_WIDTH) - (CENTIPEDE_WIDTH * NUMBER_OF_CENTIPEDES_TO_DESTROY); i -= CENTIPEDE_WIDTH) {
+                    centipede.setX(i);
+                    centipede.setY(32);
+                    centipede.setDying(false);
+                    centipede.setVisible(true);
+                    centipede.times_hit = 0;
+                }
+            }
+
+            // reset spider
+            spider.setX(SPIDER_INIT_X);
+            spider.setY(SPIDER_INIT_Y);
+            spider.setDying(false);
+            spider.times_hit = 0;
+
+            // reset player
+            player.setX(344);
+            player.setY(600);
+            player.setVisible(true);
+            player.setDying(false);
+
+            // restart round set back to false
+            game_lives--;
+            restart_round = false;
+        }
+    }
+
     public void animationCycle() {
-        if (deaths == NUMBER_OF_CENTIPEDES_TO_DESTROY || !player.isVisible() && !restart_round) {
+        if ((deaths == NUMBER_OF_CENTIPEDES_TO_DESTROY || !player.isVisible()) && !restart_round) {
             restart_round = true;
             // score for killing off a centipede
             if (deaths == NUMBER_OF_CENTIPEDES_TO_DESTROY) {
@@ -244,15 +283,15 @@ public class Board extends JPanel implements Runnable, Constraints {
             }
 
             if (!player.isVisible()) {
-                game_lives--;
                 getRestorePoints();
+                restart_game(false);
             }
 
             deaths = 0;
-            //restart_game();
-        }
-        if (game_lives == 0) {
-            ingame = false;
+
+            if (game_lives == 0) {
+                ingame = false;
+            }
         }
 
         //player
@@ -271,8 +310,6 @@ public class Board extends JPanel implements Runnable, Constraints {
                     if (centipede.isVisible() && shot.isVisible()) {
                         if (shotX >= centipedeX && shotX <= (centipedeX + CENTIPEDE_WIDTH)
                                 && shotY >= centipedeY && shotY <= (centipedeY + CENTIPEDE_HEIGHT)) {
-                            //ImageIcon ii = new ImageIcon(explImg);
-                            //centipede.setImage(ii.getImage());
                             centipede.switchState();
                             if (centipede.isDying()) {
                                 deaths++;
@@ -348,9 +385,6 @@ public class Board extends JPanel implements Runnable, Constraints {
                     if (c_y == mushroom.getY() && c_x <= (mushroom.getX() + MUSHROOM_WIDTH) && (c_x + CENTIPEDE_WIDTH) >= mushroom.getX()) {
                         centipede.setY(c_y + CENTIPEDE_HEIGHT);
                     }
-//                    else if (c_y == mushroom.getY() && (c_x + CENTIPEDE_WIDTH) >= mushroom.getX() && c_x < && centipede.cur_direction == CENTIPEDE_SPEED) {
-//                        centipede.setY(c_y + CENTIPEDE_HEIGHT);
-//                    }
                 }
 
                 if (c_x + CENTIPEDE_WIDTH > BOARD_WIDTH) {
@@ -372,20 +406,6 @@ public class Board extends JPanel implements Runnable, Constraints {
             }
         }
 
-//        Iterator it = centipedes.iterator();
-//
-//        while (it.hasNext()) {
-//            Centipede centipede = (Centipede) it.next();
-//            if (centipede.isVisible()) {
-//                int y = centipede.getY();
-//                if (y > GROUND - CENTIPEDE_HEIGHT) {
-//                    ingame = false;
-//                    message = "Invasion!";
-//                }
-//                centipede.act(direction);
-//            }
-//        }
-
         //player deaths
         if (spider.isVisible() && player.isVisible()) {
             if (spider.getX() >= player.getX() && spider.getX() <= (player.getX() + PLAYER_WIDTH)
@@ -404,21 +424,21 @@ public class Board extends JPanel implements Runnable, Constraints {
             if (!restart_round) {
                 repaint();
                 animationCycle();
-            }
-            timeDiff = System.currentTimeMillis() - beforeTime;
-            sleep = DELAY - timeDiff;
+                timeDiff = System.currentTimeMillis() - beforeTime;
+                sleep = DELAY - timeDiff;
 
-            if (sleep < 0) {
-                sleep = 2;
-            }
+                if (sleep < 0) {
+                    sleep = 2;
+                }
 
-            try {
-                Thread.sleep(sleep);
-            } catch (InterruptedException e) {
-                System.out.println("interrupted");
-            }
+                try {
+                    Thread.sleep(sleep);
+                } catch (InterruptedException e) {
+                    System.out.println("interrupted");
+                }
 
-            beforeTime = System.currentTimeMillis();
+                beforeTime = System.currentTimeMillis();
+            }
         }
         gameOver();
     }
