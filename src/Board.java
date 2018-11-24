@@ -78,7 +78,7 @@ public class Board extends JPanel implements Runnable, Constraints {
     }
 
     public void drawInitCentipede() {
-        for (int i = (BOARD_WIDTH - CENTIPEDE_WIDTH); i >= (BOARD_WIDTH - CENTIPEDE_WIDTH) - (CENTIPEDE_WIDTH * NUMBER_OF_CENTIPEDES_TO_DESTROY); i -= CENTIPEDE_WIDTH) {
+        for (int i = (BOARD_WIDTH - CENTIPEDE_WIDTH); i > (BOARD_WIDTH - CENTIPEDE_WIDTH) - (CENTIPEDE_WIDTH * NUMBER_OF_CENTIPEDES_TO_DESTROY); i -= CENTIPEDE_WIDTH) {
             centipedes.add(new Centipede(i, 32));
         }
     }
@@ -314,6 +314,7 @@ public class Board extends JPanel implements Runnable, Constraints {
             // score for killing off a centipede
             if (deaths == NUMBER_OF_CENTIPEDES_TO_DESTROY) {
                 game_score += 600;
+                restart_game(true);
             }
 
             if (!player.isVisible()) {

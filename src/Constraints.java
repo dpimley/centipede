@@ -6,7 +6,7 @@ public interface Constraints {
     public static final int BORDER_RIGHT = 30;
     public static final int BORDER_LEFT = 5;
     public static final int NUMBER_OF_CENTIPEDES_TO_DESTROY = 12;
-    public static final int MUSHROOM_CHANCE = 35;
+    public static final int MUSHROOM_CHANCE = 20;
     public static final int MUSHROOM_START = 48;
     public static final int DELAY = 17;
     public static final int PLAYER_WIDTH = 14;
