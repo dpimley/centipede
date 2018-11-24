@@ -5,7 +5,7 @@ public class Mushroom extends Sprite {
     private final String mushroomImg1 = "images\\mushroom1.png";
     private final String mushroomImg2 = "images\\mushroom2.png";
 
-    private int times_hit;
+    public int times_hit;
 
     public Mushroom(int x, int y) {
         initMushroom(x, y);

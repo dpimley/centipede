@@ -27,13 +27,14 @@ public class Board extends JPanel implements Runnable, Constraints {
 
     private final int SPIDER_INIT_X = 0;
     private final int SPIDER_INIT_Y = GROUND;
-    private final int CENTIPEDE_INIT_X = 150;
-    private final int CENTIPEDE_INIT_Y = 5;
-    private int direction = -1;
     private int deaths = 0;
 
+    private int game_lives = 3;
+    private int game_score = 0;
+
     private boolean ingame = true;
-    //private final String explImg = "../images/explosion.png";
+
+    private boolean restart_round = false;
 
     private String message = "Game Over";
 
@@ -78,7 +79,7 @@ public class Board extends JPanel implements Runnable, Constraints {
 
     public void drawInitCentipede() {
         for (int i = (BOARD_WIDTH - CENTIPEDE_WIDTH); i >= (BOARD_WIDTH - CENTIPEDE_WIDTH) - (CENTIPEDE_WIDTH * NUMBER_OF_CENTIPEDES_TO_DESTROY); i -= CENTIPEDE_WIDTH) {
-            centipedes.add(new Centipede(i, 0));
+            centipedes.add(new Centipede(i, 32));
         }
     }
 
@@ -157,7 +158,6 @@ public class Board extends JPanel implements Runnable, Constraints {
 
         if (player.isDying()) {
             player.die();
-            ingame = false;
         }
     }
 
@@ -170,6 +170,16 @@ public class Board extends JPanel implements Runnable, Constraints {
         }
     }
 
+    public void drawScore(Graphics g) {
+        if (ingame) {
+            Font small = new Font("Helvetica", Font.BOLD, 14);
+            FontMetrics metr = this.getFontMetrics(small);
+            g.setColor(Color.white);
+            g.setFont(small);
+            g.drawString("Score: " + game_score + " Lives: " + game_lives, 2, 16);
+        }
+    }
+
 
     @Override
     public void paintComponent(Graphics g) {
@@ -178,14 +188,20 @@ public class Board extends JPanel implements Runnable, Constraints {
         g.setColor(Color.black);
         g.fillRect(0, 0, d.width, d.height);
         g.setColor(Color.blue);
+        Font small = new Font("Helvetica", Font.BOLD, 14);
+        FontMetrics metr = this.getFontMetrics(small);
+        g.setColor(Color.white);
+        g.setFont(small);
+        g.drawString("Score: " + game_score + " Lives: " + game_lives, 2, 16);
 
         if (ingame) {
-            g.drawLine(0, GROUND, BOARD_WIDTH, GROUND);
+            //g.drawLine(0, GROUND, BOARD_WIDTH, GROUND);
             drawCentipedes(g);
             drawSpider(g);
             drawMushrooms(g);
             drawPlayer(g);
             drawShot(g);
+            drawScore(g);
         }
 
         Toolkit.getDefaultToolkit().sync();
@@ -211,10 +227,32 @@ public class Board extends JPanel implements Runnable, Constraints {
         g.drawString(message, (BOARD_WIDTH - metr.stringWidth(message)) / 2, BOARD_WIDTH / 2);
     }
 
+    public void getRestorePoints() {
+        for (Mushroom mushroom: mushrooms) {
+            if (mushroom.isVisible() && (mushroom.times_hit == 1 || mushroom.times_hit == 2)) {
+                game_score += 10;
+            }
+        }
+    }
+
     public void animationCycle() {
-        if (deaths == NUMBER_OF_CENTIPEDES_TO_DESTROY) {
+        if (deaths == NUMBER_OF_CENTIPEDES_TO_DESTROY || !player.isVisible() && !restart_round) {
+            restart_round = true;
+            // score for killing off a centipede
+            if (deaths == NUMBER_OF_CENTIPEDES_TO_DESTROY) {
+                game_score += 600;
+            }
+
+            if (!player.isVisible()) {
+                game_lives--;
+                getRestorePoints();
+            }
+
+            deaths = 0;
+            //restart_game();
+        }
+        if (game_lives == 0) {
             ingame = false;
-            message = "Game won!";
         }
 
         //player
@@ -235,8 +273,14 @@ public class Board extends JPanel implements Runnable, Constraints {
                                 && shotY >= centipedeY && shotY <= (centipedeY + CENTIPEDE_HEIGHT)) {
                             //ImageIcon ii = new ImageIcon(explImg);
                             //centipede.setImage(ii.getImage());
-                            centipede.setDying(true);
-                            deaths++;
+                            centipede.switchState();
+                            if (centipede.isDying()) {
+                                deaths++;
+                                game_score += 5;
+                            }
+                            else {
+                                game_score += 2;
+                            }
                             shot.die();
                         }
                     }
@@ -250,6 +294,12 @@ public class Board extends JPanel implements Runnable, Constraints {
                         if (shotX >= mushroomX && shotX <= (mushroomX + MUSHROOM_WIDTH)
                                 && shotY >= mushroomY && shotY <= (mushroomY + MUSHROOM_HEIGHT)) {
                             mushroom.switchState();
+                            if (mushroom.isDying()) {
+                                game_score += 5;
+                            }
+                            else {
+                                game_score += 1;
+                            }
                             shot.die();
                         }
                     }
@@ -258,7 +308,13 @@ public class Board extends JPanel implements Runnable, Constraints {
                 if (spider.isVisible() && shot.isVisible()) {
                     if (shotX >= spider.getX() && shotX <= (spider.getX() + SPIDER_WIDTH)
                                 && shotY >= spider.getY() && shotY <= (spider.getY() + SPIDER_HEIGHT)) {
-                        spider.setDying(true);
+                        spider.switchState();
+                        if (spider.isDying()) {
+                            game_score += 600;
+                        }
+                        else {
+                            game_score += 100;
+                        }
                         shot.die();
                     }
                 }
@@ -298,11 +354,15 @@ public class Board extends JPanel implements Runnable, Constraints {
                 }
 
                 if (c_x + CENTIPEDE_WIDTH > BOARD_WIDTH) {
-                    centipede.setY(c_y + CENTIPEDE_HEIGHT);
+                    if (c_y != GROUND - CENTIPEDE_HEIGHT) {
+                        centipede.setY(c_y + CENTIPEDE_HEIGHT);
+                    }
                     centipede.act(-CENTIPEDE_SPEED);
                     centipede.cur_direction = -CENTIPEDE_SPEED;
                 } else if(c_x < 0) {
-                    centipede.setY(c_y + CENTIPEDE_HEIGHT);
+                    if (c_y != GROUND - CENTIPEDE_HEIGHT) {
+                        centipede.setY(c_y + CENTIPEDE_HEIGHT);
+                    }
                     centipede.act(CENTIPEDE_SPEED);
                     centipede.cur_direction = CENTIPEDE_SPEED;
                 }
@@ -341,9 +401,10 @@ public class Board extends JPanel implements Runnable, Constraints {
         long beforeTime, timeDiff, sleep;
         beforeTime = System.currentTimeMillis();
         while (ingame) {
-            repaint();
-            animationCycle();
-
+            if (!restart_round) {
+                repaint();
+                animationCycle();
+            }
             timeDiff = System.currentTimeMillis() - beforeTime;
             sleep = DELAY - timeDiff;
 

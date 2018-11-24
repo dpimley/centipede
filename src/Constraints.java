@@ -18,6 +18,6 @@ public interface Constraints {
     public static final int CENTIPEDE_WIDTH = 16;
     public static final int SPIDER_WIDTH = 30;
     public static final int SPIDER_HEIGHT = 16;
-    public static final int CENTIPEDE_SPEED = 4;
+    public static final int CENTIPEDE_SPEED = 8;
     public static final int SPIDER_AREA = 500;
 }
