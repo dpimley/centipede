@@ -16,6 +16,10 @@ import java.util.Random;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
+import javax.sound.sampled.*;
+import java.io.*;
+import java.net.URL;
+
 public class Board extends JPanel implements Runnable, Constraints {
 
     private Dimension d;
@@ -222,7 +226,7 @@ public class Board extends JPanel implements Runnable, Constraints {
 
         g.setColor(Color.white);
         g.setFont(small);
-        g.drawString(message, (BOARD_WIDTH - metr.stringWidth(message)) / 2, BOARD_WIDTH / 2);
+        g.drawString("Game Over! Score: " + game_score, (BOARD_WIDTH - metr.stringWidth(message)) / 2, BOARD_WIDTH / 2);
     }
 
     public void getRestorePoints() {
@@ -457,6 +461,25 @@ public class Board extends JPanel implements Runnable, Constraints {
         }
     }
 
+    public void play_sound() {
+        try {
+            // Open an audio input stream.
+            File soundFile = new File("sounds\\fire_shot.wav"); //you could also get the sound file with an URL
+            AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
+            // Get a sound clip resource.
+            Clip clip = AudioSystem.getClip();
+            // Open audio clip and load samples from the audio input stream.
+            clip.open(audioIn);
+            clip.start();
+        } catch (UnsupportedAudioFileException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (LineUnavailableException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     @Override
     public void run() {
@@ -498,6 +521,7 @@ public class Board extends JPanel implements Runnable, Constraints {
 
             if (ingame) {
                 shots.add(new Shot (x, y));
+                play_sound();
             }
         }
     }
