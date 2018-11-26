@@ -33,6 +33,8 @@ public class Board extends JPanel implements Runnable, Constraints {
     private final int SPIDER_INIT_Y = GROUND;
     private int deaths = 0;
 
+    public int MUSHROOM_CHANCE = 0;
+
     private int game_lives = 3;
     private int game_score = 0;
 
@@ -44,7 +46,8 @@ public class Board extends JPanel implements Runnable, Constraints {
 
     private Thread animator;
 
-    public Board(){
+    public Board(int m_c){
+        MUSHROOM_CHANCE = m_c;
         initBoard();
     }
 
