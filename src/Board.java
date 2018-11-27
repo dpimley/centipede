@@ -9,7 +9,7 @@ import java.awt.event.MouseEvent;
 
 import java.awt.event.MouseMotionListener;
 import java.lang.reflect.Array;
-import java.util.ArrayList;
+import java.util.Vector;
 import java.util.Iterator;
 import java.util.Random;
 
@@ -23,11 +23,11 @@ import java.net.URL;
 public class Board extends JPanel implements Runnable, Constraints {
 
     private Dimension d;
-    private ArrayList<Centipede> centipedes;
+    private Vector<Centipede> centipedes;
     private Spider spider;
     private Player player;
-    private ArrayList<Shot> shots;
-    private ArrayList<Mushroom> mushrooms;
+    private Vector<Shot> shots;
+    private Vector<Mushroom> mushrooms;
 
     private final int SPIDER_INIT_X = 0;
     private final int SPIDER_INIT_Y = GROUND;
@@ -69,13 +69,13 @@ public class Board extends JPanel implements Runnable, Constraints {
     }
 
     public void gameInit() {
-        centipedes = new ArrayList<>();
+        centipedes = new Vector<>();
         drawInitCentipede();
-        mushrooms = new ArrayList<>();
+        mushrooms = new Vector<>();
         drawInitMushrooms();
         spider = new Spider(SPIDER_INIT_X, SPIDER_INIT_Y);
         player = new Player();
-        shots = new ArrayList<>();
+        shots = new Vector<>();
 
         if (animator == null || !ingame){
             animator = new Thread(this);
@@ -280,13 +280,13 @@ public class Board extends JPanel implements Runnable, Constraints {
             restart_round = false;
         }
         else {
-            centipedes = new ArrayList<>();
+            centipedes = new Vector<>();
             drawInitCentipede();
-            mushrooms = new ArrayList<>();
+            mushrooms = new Vector<>();
             drawInitMushrooms();
             spider = new Spider(SPIDER_INIT_X, SPIDER_INIT_Y);
             player = new Player();
-            shots = new ArrayList<>();
+            shots = new Vector<>();
             restart_round = false;
         }
     }
